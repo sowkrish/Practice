@@ -2,14 +2,20 @@
 -- Rooms after the first of Feb, 1997. (1 point possible)
 select  musician.m_name from  musician inner join concert on musician.m_no=concert.concert_orgniser
 where concert_venue='Assembly Rooms' and con_date>'1997/02/01';
+
 -- Find all the performers who played guitar or violin and were born in England. (1 point possible)
 select m.* from performer perf join musician m on perf.perf_is=m.m_no join place pl on pl.place_no=m.born_in
 where (perf.instrument='guitar' or perf.instrument='violin') and pl.place_country='England';
+
 -- List the names of musicians who have conducted concerts in USA together with the towns 
 -- and dates of these concerts. (1 point possible)
-select m.m_name,c.concert_venue,c.con_date from musician m join concert c on c.concert_orgniser=m.m_no
-join place pl on pl.place_no=m.living_in where pl.place_country='USA';
+select m.m_name,c.place_town,c.con_date from musician m join performance perf 
+on m.m_no=perf.conducted_by join concert c on c.concert_no=perf.performed_in 
+join place pl on pl.place_no=c.concert_in where pl.place_country='USA';
+
 -- How many concerts have featured at least one composition by Andy Jones? 
 -- List concert date, venue and the composition's title. (1 point possible)
-select count(concert_no),c.con_date,c.concert_venue,compo.c_title from concert c join musician m on c.concert_orgniser=m.m_no
-join composition compo on compo.c_in=c.concert_in where m.m_name='Andy Jones';
+select c.con_date,c.concert_venue,compo.c_title from musician m join place pl on
+m.living_in=pl.place_no join  coposition compo on pl.place_no=compo.c_in join performance perf
+on compo.c_in=perf.performed_in join concert c on c.concert_no=perf_performed_in
+where m.m_name='Andy Jones';

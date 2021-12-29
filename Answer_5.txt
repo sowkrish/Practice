@@ -9,13 +9,28 @@ where (perf.instrument='guitar' or perf.instrument='violin') and pl.place_countr
 
 -- List the names of musicians who have conducted concerts in USA together with the towns 
 -- and dates of these concerts. (1 point possible)
-select m.m_name,c.place_town,c.con_date from musician m join performance perf 
+select m.m_name,pl.place_town,c.con_date from musician m join performance perf 
 on m.m_no=perf.conducted_by join concert c on c.concert_no=perf.performed_in 
 join place pl on pl.place_no=c.concert_in where pl.place_country='USA';
 
 -- How many concerts have featured at least one composition by Andy Jones? 
 -- List concert date, venue and the composition's title. (1 point possible)
 select c.con_date,c.concert_venue,compo.c_title from musician m join place pl on
-m.living_in=pl.place_no join  coposition compo on pl.place_no=compo.c_in join performance perf
-on compo.c_in=perf.performed_in join concert c on c.concert_no=perf_performed_in
+m.living_in=pl.place_no join  composition compo on pl.place_no=compo.c_in join performance perf
+on compo.c_no=perf.performed join concert c on c.concert_no=perf.performed_in 
 where m.m_name='Andy Jones';
+
+-- List the different instruments played by the musicians and avg number of musicians who 
+-- play the instrument. (1 point possible)
+select instrument,count(m_name) as avg_mus from performer perf join musician m on m.m_no=perf.perf_is 
+group by instrument;
+
+-- Show the least commonly played instrument and the number of musicians who play it. (1 point possible)
+select instrument,count(m_name) from performer p join musician m on m.m_no=p.perf_is 
+ group by instrument having count(instrument)=1;
+ 
+--  List the name and town of birth of any performer born in the same city as 
+--  James First.(1 point possible)
+select m.m_name,pl.place_town from musician m join place pl on pl.place_no=m.living_in 
+where pl.place_town in (select pl.place_town from place pl join musician m on m.living_in=pl.place_no 
+where m.m_name='James First');
